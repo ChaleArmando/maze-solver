@@ -1,4 +1,4 @@
-from Window import *
+from window import *
 from cell import Cell
 
 def main():
