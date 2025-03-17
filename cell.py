@@ -19,18 +19,26 @@ class Cell:
         self._x2 = x2
         self._y1 = y1
         self._y2 = y2
-        if self.has_left_wall:
-            l_wall = Line(Point(self._x1, self._y1), Point(self._x1, self._y2))
+        l_wall = Line(Point(self._x1, self._y1), Point(self._x1, self._y2))
+        t_wall = Line(Point(self._x1, self._y1), Point(self._x2, self._y1))
+        r_wall = Line(Point(self._x2, self._y1), Point(self._x2, self._y2))
+        b_wall = Line(Point(self._x1, self._y2), Point(self._x2, self._y2))
+        if self.has_left_wall:   
             self._win.draw_line(l_wall)
+        else:
+            self._win.draw_line(l_wall, f_color="white")
         if self.has_top_wall:
-            t_wall = Line(Point(self._x1, self._y1), Point(self._x2, self._y1))
             self._win.draw_line(t_wall)
+        else:
+            self._win.draw_line(t_wall, f_color="white")
         if self.has_right_wall:
-            r_wall = Line(Point(self._x2, self._y1), Point(self._x2, self._y2))
             self._win.draw_line(r_wall)
+        else:
+            self._win.draw_line(r_wall, f_color="white")
         if self.has_bottom_wall:
-            b_wall = Line(Point(self._x1, self._y2), Point(self._x2, self._y2))
             self._win.draw_line(b_wall)
+        else:
+            self._win.draw_line(b_wall, f_color="white")
     
     def draw_move(self, to_cell, undo=False):
         if self._win is None:
