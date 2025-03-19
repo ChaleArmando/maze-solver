@@ -1,9 +1,10 @@
 from cell import *
 from window import *
 import time
+import random
 
 class Maze:
-    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None):
+    def __init__(self, x1, y1, num_rows, num_cols, cell_size_x, cell_size_y, win=None, seed=None):
         self._x1 = x1
         self._y1 = y1
         self._num_rows = num_rows
@@ -13,6 +14,10 @@ class Maze:
         self._win = win
         self._create_cells()
         self._break_entrance_and_exit()
+        if seed is not None:
+            random.seed(seed)
+        self._break_walls_r(0, 0)
+        self._reset_celss_visited()
 
     def _create_cells(self):
         self._cells = [[Cell(self._win) for row in range(self._num_rows)] for col in range(self._num_cols)]
@@ -45,3 +50,47 @@ class Maze:
         self._cells[self._num_cols-1][self._num_rows-1].has_right_wall = False
         self._draw_cell(self._num_cols-1, self._num_rows-1)
         
+    def _break_walls_r(self, i, j):
+        self._cells[i][j].visited = True
+        while True:
+            visit = []
+            # left cell
+            if i > 0 and not self._cells[i-1][j].visited:
+                visit.append((i-1,j))
+            # right cell
+            if i < self._num_cols - 1 and not self._cells[i+1][j].visited:
+                visit.append((i+1,j))
+            # top cell
+            if j > 0 and not self._cells[i][j-1].visited:
+                visit.append((i,j-1))
+            # bottom cell
+            if j < self._num_rows - 1 and not self._cells[i][j+1].visited:
+                visit.append((i,j+1))
+
+            if len(visit) == 0:
+                self._draw_cell(i, j)
+                return
+            
+            selected = visit[random.randrange(len(visit))]
+            # left cell
+            if selected[0] == i-1:
+                self._cells[i][j].has_left_wall = False
+                self._cells[i-1][j].has_right_wall = False
+            # right cell
+            if selected[0] == i+1:
+                self._cells[i][j].has_right_wall = False
+                self._cells[i+1][j].has_left_wall = False
+            # top cell
+            if selected[1] == j-1:
+                self._cells[i][j].has_top_wall = False
+                self._cells[i][j-1].has_bottom_wall = False
+            # bottom cell
+            if selected[1] == j+1:
+                self._cells[i][j].has_bottom_wall = False
+                self._cells[i][j+1].has_top_wall = False
+            self._break_walls_r(selected[0], selected[1])
+
+    def _reset_celss_visited(self):
+        for i in range(self._num_cols):
+            for j in range(self._num_rows):
+                self._cells[i][j].visited = False
